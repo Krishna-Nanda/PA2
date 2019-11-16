@@ -55,7 +55,7 @@ vector<int> GraphAnalyzer::topKNeighbors(int nodeID, int k,  vector<float> w) {
         vector.push_back(make_pair(it->first, it->second));
     }
 
-    sort(v.begin(), v.end(), greater<int>());
+    sort(vector.begin(), vector.end(), greater<int>());
 
     for(int i = 0; i < k; i++){
         node_ids.push_back(vector[i]->first);
