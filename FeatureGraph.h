@@ -10,6 +10,17 @@
 
 using namespace std;
 
+struct Node{
+    int node_id;
+    vector<float> features;
+};
+
+struct Edge{
+    int node_id1;
+    int node_id2;
+
+    vector<float> weights;
+};
 
 
 class FeatureGraph {
