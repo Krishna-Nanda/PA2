@@ -2,6 +2,7 @@
 #define ANALYZER_H
 
 #include "FeatureGraph.h"
+#include <map>
 
 
 using namespace std;

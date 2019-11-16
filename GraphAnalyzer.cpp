@@ -34,7 +34,34 @@ string GraphAnalyzer::topKOpenTriangles(int k) {
 
 vector<int> GraphAnalyzer::topKNeighbors(int nodeID, int k,  vector<float> w) {
     //TODO
-    return vector<int> {3};
+    vector<int> node_ids(k, 0);
+
+    map<int,float> node_priority_pair;
+    for(int i = 0; i < NeighborMap[nodeID].size(); i++){
+        if(NeighborMap[nodeID][i] == 1){
+            //calc priority
+            float priority = 0;
+            for(int j = 0; j < w.size(); j++){
+                vector<float> features = getNode(nodeID)->features;
+                priority += w[j] * features[i];
+            }
+            node_priority_pair[nodeID] = priority;
+        }
+    }
+
+    vector<pair<int, float>> vector;
+    map<int, float> :: iterator it;
+    for (it=node_priority_pair.begin(); it!=node_priority_pair.end(); it++){
+        vector.push_back(make_pair(it->first, it->second));
+    }
+
+    sort(v.begin(), v.end(), greater<int>());
+
+    for(int i = 0; i < k; i++){
+        node_ids.push_back(vector[i]->first);
+    }
+
+    return node_ids;
 };
 
 
