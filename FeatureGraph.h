@@ -10,18 +10,11 @@
 
 using namespace std;
 
-struct Node{
-    int node_id;
-    vector<float> features;
+struct List_Node{
+    Node* node;
+    vector<Node*> neighbors;
+    List_Node(Node* node): node(node){}
 };
-
-struct Edge{
-    int node_id1;
-    int node_id2;
-
-    vector<float> weights;
-};
-
 
 class FeatureGraph {
 
@@ -45,7 +38,8 @@ public:
     // May assume nodes in edge are already present
     void insert(Edge edge);
 
-
+private:
+    vector<List_Node> table;
 };  
 
 #endif
