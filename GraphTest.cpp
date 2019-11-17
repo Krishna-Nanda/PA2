@@ -9,15 +9,13 @@ int main() {
     
     vector<Node> nodes  {
        Node(1, vector<float> { 10, 10}),
-       Node(1,vector<float> { 20, 20}),
-       Node(1, vector<float> { 30, 30}),
-       Node(1, vector<float> { 40, 40}) };
+       Node(2,vector<float> { 20, 20}),
+       Node(3, vector<float> { 30, 30}),
+       Node(4, vector<float> { 40, 40}) };
     
     vector<Edge> edges {Edge(1,2, 10), Edge(2, 3, 9), Edge(3, 4, 1), Edge(1, 3, 5)};
   
     int d = 2;
-
- 
 
     FeatureGraph graph = FeatureGraph(4, d, nodes, edges);
     GraphAnalyzer analyzer = GraphAnalyzer(graph);
