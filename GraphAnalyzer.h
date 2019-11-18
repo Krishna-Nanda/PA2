@@ -62,6 +62,8 @@ public:
     // w: weight vector
     float jacardIndexOfTopKNeighborhoods(int nodeAID, int nodeBID, int k, vector<float> w);
 
+    List_Node getListNode(int nodeID);
+
 };
 
 #endif
