@@ -10,8 +10,8 @@
 
 using namespace std;
 
-bool descending_order(const pair<int,int> &a,
-                      const pair<int,int> &b)
+bool descending_order(const pair<float,int> &a,
+                      const pair<float,int> &b)
 {
     return (a.first > b.first);
 }
