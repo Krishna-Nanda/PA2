@@ -34,8 +34,7 @@ int main() {
 
     analyzer.insert(newNode);
     analyzer.insert(Edge(4, 5, 32));
-    
-    
+
     vector<float> weights{.5, .5};
     vector<int> neighbors = analyzer.topKNeighbors(2, 3, weights);
     

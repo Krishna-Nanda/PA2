@@ -32,13 +32,13 @@ FeatureGraph::FeatureGraph(int N, int d, vector<Node> nodes, vector<Edge> edges)
         table[index_idb].neighbors.push_back(table[index_ida].node);
     }
 
-    for(int i = 0; i < table.size(); i++){
-        cout << table[i].node->id << endl;
-        for(int j = 0; j< table[i].neighbors.size(); j++){
-            cout << "neighbor id: " << table[i].neighbors[j]->id << endl;
-        }
-        cout << "next" << endl;
-    }
+//    for(int i = 0; i < table.size(); i++){
+//        cout << table[i].node->id << endl;
+//        for(int j = 0; j< table[i].neighbors.size(); j++){
+//            cout << "neighbor id: " << table[i].neighbors[j]->id << endl;
+//        }
+//        cout << "next" << endl;
+//    }
 
 };
 
@@ -69,4 +69,7 @@ void FeatureGraph::insert(Edge edge){
 
 };
 
+vector<List_Node> FeatureGraph::getTable(){
+    return table;
+}
 

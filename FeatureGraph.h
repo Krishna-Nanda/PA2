@@ -37,6 +37,7 @@ public:
     // insert given edge
     // May assume nodes in edge are already present
     void insert(Edge edge);
+    vector<List_Node> getTable();
 
 private:
     vector<List_Node> table;
