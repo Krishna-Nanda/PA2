@@ -46,19 +46,19 @@ string GraphAnalyzer::topKOpenTriangles(int k) {
 vector<int> GraphAnalyzer::topKNeighbors(int nodeID, int k,  vector<float> w) {
     //TODO
 
-    List_Node list_node = getListNode(nodeID);
+    Graph_Node graph_node = getGraphNode(nodeID);
     vector<int> node_ids(0, 0);
     vector<pair<float,int>> node_priority_pair;
 
-    for(int i = 0; i < list_node.neighbors.size(); i++){
+    for(int i = 0; i < graph_node.neighbors.size(); i++){
             //calc priority
             float priority = 0;
-            vector<float> node_features = list_node.neighbors[i]->features;
+            vector<float> node_features = graph_node.neighbors[i]->node->features;
             for(int j = 0; j < w.size(); j++){ //may seg fault, make features.size
                 priority += w[j] * node_features[j];
             }
 
-            pair<float, int> to_insert = make_pair(priority, list_node.neighbors[i]->id);
+            pair<float, int> to_insert = make_pair(priority, graph_node.neighbors[i]->node->id);
             node_priority_pair.push_back(to_insert);
 
     }
@@ -91,8 +91,8 @@ float GraphAnalyzer::jacardIndexOfTopKNeighborhoods(int nodeAID, int nodeBiID, i
     return 0;
 };
 
-List_Node GraphAnalyzer::getListNode(int nodeID){
-    vector<List_Node> graph = G.getTable();
+Graph_Node GraphAnalyzer::getGraphNode(int nodeID){
+    vector<Graph_Node> graph = G.getGraph();
     for(int i = 0; i < graph.size(); i++){
         if(graph[i].node->id == nodeID){
             return graph[i];
