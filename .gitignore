@@ -23,7 +23,7 @@ CMakeLists.txt
 .idea/**/uiDesigner.xml
 .idea/**/dbnavigator.xml
 
-
+.DS_Store
 # CMake
 cmake-build-*/
 

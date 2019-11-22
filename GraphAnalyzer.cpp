@@ -3,6 +3,8 @@
 #include "GraphAnalyzer.h"
 #include <algorithm>
 
+
+
 #include <iostream>
 
 
@@ -28,7 +30,27 @@ void GraphAnalyzer::insert(Edge e) {
 
 int GraphAnalyzer::diameter() {
     //TODO
-    return 2;
+    vector<Graph_Node> graph = G.getGraph();
+
+    int current_diameter = -1;
+    for(int i = 0; i < graph.size(); i++){
+        if(graph[i].neighbors.size() == 0){
+            continue;
+        }
+        vector<pair<int, int>> shortest_path = Shortest_Path(graph[i]);
+        int current_max = shortest_path[0].first;
+        for(int j = 1; j < shortest_path.size(); j++){
+            if(current_max < shortest_path[j].first)
+                current_max = shortest_path[j].first;
+
+        if(current_max > current_diameter)
+            current_diameter = current_max;
+    }
+
+
+
+    }
+    return current_diameter;
 };
 
 
@@ -99,6 +121,83 @@ Graph_Node GraphAnalyzer::getGraphNode(int nodeID){
         }
     }
     return nullptr;
+}
+
+vector<pair<int,int>> GraphAnalyzer::Shortest_Path(Graph_Node source_vetrex) {
+    vector<Graph_Node> graph = G.getGraph();
+
+    vector<pair<int, int>> distance;
+    vector<pair<int, int>> queue;
+
+    for(int i = 0; i < graph.size(); i++){
+        if(graph[i].node->id == source_vetrex.node->id) {
+            distance.push_back(make_pair(0, graph[i].node->id));
+        }else{
+            distance.push_back(make_pair(INT_MAX, graph[i].node->id));
+        }
+    }
+
+    vector<int> Visited_Before;
+    queue.resize(distance.size());
+    copy(distance.begin(), distance.end(), queue.begin());
+
+    make_heap(queue.begin(),queue.end());
+    sort_heap(queue.begin(),queue.end());
+
+    while(!queue.empty()){
+        bool found = false;
+        for(int i = 0; i < Visited_Before.size(); i++){
+            for(int j = 0; j < queue.size(); j++){
+                if( Visited_Before[i] == queue[j].second){
+                    queue.erase(queue.begin() + j);
+                    sort_heap(queue.begin(),queue.end());
+                    found = true;
+                }
+            }
+
+        }
+
+
+        pair<int, int> current_pair = queue.front();
+
+        if(found){
+            continue;
+        } else{
+            Visited_Before.push_back(current_pair.second);
+        }
+
+        Graph_Node graph_node = getGraphNode(current_pair.second);
+
+        for(int i = 0; i < graph_node.neighbors.size(); i++){
+            //make sure not viasited
+
+            int current_id = graph_node.node->id;
+            int neighbor_id = graph_node.neighbors[i]->node->id;
+
+            int current_distance;
+            int neighbor_distance;
+
+            int neighbor_index;
+
+            for(int j = 0; j < distance.size(); j++){
+                if(current_id == distance[j].second){
+                    current_distance = distance[j].first;
+                }
+                if(neighbor_id == distance[j].second){
+                    neighbor_index = j;
+                    neighbor_distance = distance[j].first;
+                }
+            }
+
+            if(neighbor_distance > current_distance + graph_node.neighbors[i]->weight){
+                distance[neighbor_index].first = current_distance +  graph_node.neighbors[i]->weight;
+            }
+        }
+
+    }
+
+    return distance;
+
 }
 
 

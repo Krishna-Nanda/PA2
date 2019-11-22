@@ -13,6 +13,7 @@ FeatureGraph::FeatureGraph(int N, int d, vector<Node> nodes, vector<Edge> edges)
     for(int i = 0; i < nodes.size(); i++){
         Node* node = new Node(nodes[i].id, nodes[i].features);
         Graph_Node graph_node(node);
+        graph_node.index = i;
         graph.push_back(graph_node);
     }
 

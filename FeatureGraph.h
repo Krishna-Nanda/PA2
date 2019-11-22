@@ -22,6 +22,7 @@ struct Graph_Node{
     Node* node;
     vector<Neighbor_Node*> neighbors;
     Graph_Node(Node* node): node(node){}
+    int index;
 };
 
 
