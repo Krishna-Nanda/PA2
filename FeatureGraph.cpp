@@ -12,24 +12,27 @@ FeatureGraph::FeatureGraph(int N, int d, vector<Node> nodes, vector<Edge> edges)
     //TODO
     for(int i = 0; i < nodes.size(); i++){
         Node* node = new Node(nodes[i].id, nodes[i].features);
-        List_Node list_node(node);
-        table.push_back(list_node);
+        Graph_Node graph_node(node);
+        graph.push_back(graph_node);
     }
 
     for(int i = 0; i < edges.size(); i++){
         int index_ida = -1;
         int index_idb = -1;
-        for(int j = 0; j < table.size(); j++){
-            if(table[j].node->id == edges[i].IdA) {
+        int weight = edges[i].weight;
+        for(int j = 0; j < graph.size(); j++){
+            if(graph[j].node->id == edges[i].IdA) {
                 index_ida = j;
             }
-            if(table[j].node->id == edges[i].IdB){
+            if(graph[j].node->id == edges[i].IdB){
                 index_idb = j;
             }
         }
+        Neighbor_Node* node1 = new Neighbor_Node(graph[index_idb].node, weight);
+        Neighbor_Node* node2 = new Neighbor_Node(graph[index_ida].node, weight);
 
-        table[index_ida].neighbors.push_back(table[index_idb].node);
-        table[index_idb].neighbors.push_back(table[index_ida].node);
+        graph[index_ida].neighbors.push_back(node1);
+        graph[index_idb].neighbors.push_back(node2);
     }
 
 //    for(int i = 0; i < table.size(); i++){
@@ -45,8 +48,8 @@ FeatureGraph::FeatureGraph(int N, int d, vector<Node> nodes, vector<Edge> edges)
 void FeatureGraph::insert(Node node){
     //TODO
     Node* new_node = new Node(node.id, node.features);
-    List_Node list_node(new_node);
-    table.push_back(list_node);
+    Graph_Node graph_node(new_node);
+    graph.push_back(graph_node);
 };
     
 void FeatureGraph::insert(Edge edge){
@@ -54,22 +57,26 @@ void FeatureGraph::insert(Edge edge){
 
     int index_ida = -1;
     int index_idb = -1;
+    int weight = edge.weight;
 
-    for(int j = 0; j < table.size(); j++){
-        if(table[j].node->id == edge.IdA) {
+    for(int j = 0; j < graph.size(); j++){
+        if(graph[j].node->id == edge.IdA) {
             index_ida = j;
         }
-        if(table[j].node->id == edge.IdB){
+        if(graph[j].node->id == edge.IdB){
             index_idb = j;
         }
     }
 
-    table[index_ida].neighbors.push_back(table[index_idb].node);
-    table[index_idb].neighbors.push_back(table[index_ida].node);
+    Neighbor_Node* node1 = new Neighbor_Node(graph[index_idb].node, weight);
+    Neighbor_Node* node2 = new Neighbor_Node(graph[index_ida].node, weight);
+
+    graph[index_ida].neighbors.push_back(node1);
+    graph[index_idb].neighbors.push_back(node2);
 
 };
 
-vector<List_Node> FeatureGraph::getTable(){
-    return table;
+vector<Graph_Node> FeatureGraph::getGraph(){
+    return graph;
 }
 
