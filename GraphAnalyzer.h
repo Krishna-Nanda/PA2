@@ -65,6 +65,13 @@ public:
 
     Graph_Node getGraphNode(int nodeID);
 
+    int numberOpenTriangles(vector<Graph_Node> graph);
+
+private:
+    vector<Triangle> open_triangles;
+    vector<Triangle> closed_triangles;
+
+
 };
 
 #endif
