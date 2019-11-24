@@ -24,6 +24,7 @@ int main() {
     GraphAnalyzer analyzer = GraphAnalyzer(graph);
 
 
+
     cout << analyzer.diameter() << "\n";
 
     cout << analyzer.openClosedTriangleRatio() << "\n";
