@@ -56,7 +56,51 @@ int GraphAnalyzer::diameter() {
 
 float GraphAnalyzer::openClosedTriangleRatio() {
     //TODO
-    return .5;
+
+    vector<Graph_Node> graph = G.getGraph();
+
+    int num_open = 0;
+    int num_closed = 0;
+    for(int i = 0; i < graph.size(); i++){
+        vector<Neighbor_Node*> og_neighbors = graph[i].neighbors;
+        for(int j = 0; j < og_neighbors.size(); j++){
+
+            int first_neighbor_id = og_neighbors[j]->node->id;
+            Graph_Node neighbor_node = getGraphNode(first_neighbor_id);
+            vector<Neighbor_Node*> first_neighbor_neighbors = neighbor_node.neighbors;
+
+            for(int k = 0; k < first_neighbor_neighbors.size(); k++){
+                int neighbor_check = first_neighbor_neighbors[k]->node->id;
+                bool closed = false;
+                bool neither = false;
+                for(int l = 0; l < og_neighbors.size(); l++){
+                    if(neighbor_check == graph[i].node->id){
+                        neither = true;
+                        continue;
+                    } else if(neighbor_check == first_neighbor_id){
+                        neither = true;
+                        continue;
+                    } else if(og_neighbors[l]->node->id == neighbor_check){
+                        closed = true;
+                        num_closed++;
+                    }
+                }
+                if(!closed && !neither){
+                      num_open++;
+                }
+            }
+        }
+    }
+
+    num_open /= 2;
+    num_closed /= 6;
+
+    float ratio = (double) num_open/num_closed;
+
+//    cout << "num open " << num_open << endl;
+//    cout << "num closed " << num_closed << endl;
+
+    return ratio;
 };
 
 string GraphAnalyzer::topKOpenTriangles(int k) {
@@ -199,6 +243,13 @@ vector<pair<int,int>> GraphAnalyzer::Shortest_Path(Graph_Node source_vetrex) {
     return distance;
 
 }
+
+int GraphAnalyzer::numberOpenTriangles(vector <Graph_Node> graph) {
+
+    return 0;
+}
+
+
 
 
 
