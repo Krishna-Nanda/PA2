@@ -56,110 +56,14 @@ int GraphAnalyzer::diameter() {
 
 float GraphAnalyzer::openClosedTriangleRatio() {
     //TODO
-
-    vector<Graph_Node> graph = G.getGraph();
-
-    int num_open = 0;
-    int num_closed = 0;
-    for(int i = 0; i < graph.size(); i++){
-        vector<Neighbor_Node*> og_neighbors = graph[i].neighbors;
-        for(int j = 0; j < og_neighbors.size(); j++){
-
-            int first_neighbor_id = og_neighbors[j]->node->id;
-            int weight1 = og_neighbors[j]->weight;
-            Graph_Node neighbor_node = getGraphNode(first_neighbor_id);
-            vector<Neighbor_Node*> first_neighbor_neighbors = neighbor_node.neighbors;
-
-            for(int k = 0; k < first_neighbor_neighbors.size(); k++){
-                int neighbor_check = first_neighbor_neighbors[k]->node->id;
-                int weight2 = first_neighbor_neighbors[k]->weight;
-
-                bool closed = false;
-                bool neither = false;
-                for(int l = 0; l < og_neighbors.size(); l++){
-                    if(neighbor_check == graph[i].node->id){
-                        neither = true;
-                        continue;
-                    } else if(neighbor_check == first_neighbor_id){
-                        neither = true;
-                        continue;
-                    } else if(og_neighbors[l]->node->id == neighbor_check){
-                        closed = true;
-                        num_closed++;
-
-                        vector<int> node_ids;
-                        node_ids.push_back(graph[i].node->id);
-                        node_ids.push_back(first_neighbor_id);
-                        node_ids.push_back(neighbor_check);
-                        sort(node_ids.begin(), node_ids.end());
-
-                        int weight = weight1 + weight2 + og_neighbors[l]->weight;
-
-                        Triangle new_closed = Triangle(node_ids, weight);
-
-                        bool duplicate = false;
-                        vector<Triangle> temp = closed_triangles;
-                        make_heap(temp.begin(), temp.end());
-                        sort_heap(temp.begin(), temp.end());
-
-                        for(int m = 0; m < temp.size(); m++){
-                            if(temp[m] == new_closed){
-                                duplicate = true;
-                            }
-                        }
-                        if(!duplicate){
-                            closed_triangles.push_back(new_closed);
-                        }
-                    }
-                }
-                if(!closed && !neither){
-                    vector<int> node_ids;
-                    node_ids.push_back(graph[i].node->id);
-                    node_ids.push_back(first_neighbor_id);
-                    node_ids.push_back(neighbor_check);
-                    sort(node_ids.begin(), node_ids.end());
-
-                    int weight = weight1 + weight2;
-
-                    Triangle new_open = Triangle(node_ids, weight);
-
-                    num_open++;
-
-                    bool duplicate = false;
-                    vector<Triangle> temp = open_triangles;
-
-                    make_heap(temp.begin(), temp.end());
-                    sort_heap(temp.begin(), temp.end());
-
-                    for(int m = 0; m < temp.size(); m++){
-                        if(temp[m] == new_open){
-                            duplicate = true;
-                        }
-                    }
-                    if(!duplicate){
-                        open_triangles.push_back(new_open);
-                    }
-                }
-            }
-        }
+    if(closed_triangles.size() == 0 ){
+        return -1;
     }
 
-    num_open /= 2;
-    num_closed /= 6;
+    float num_open = open_triangles.size();
+    float num_closed = closed_triangles.size();
 
-    float ratio = (double) num_open/num_closed;
-
-
-
-//    cout << "num open " << open_triangles << endl;
-//    cout << "num closed " << num_closed << endl;
-//
-//    for(int i = 0; i < open_triangles.size(); i++){
-//        for(int j = 0; j < open_triangles[i].getNodeIds().size(); j++){
-//            cout << open_triangles[i].getNodeIds()[j];
-//        }
-//        cout << " weight: " << open_triangles[i].getWeight() << endl;
-//    }
+    float ratio =  num_open/num_closed;
 
     return ratio;
 };
