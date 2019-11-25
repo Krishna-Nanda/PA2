@@ -20,7 +20,7 @@ int main() {
   
     int d = 2;
 
-    FeatureGraph graph = FeatureGraph(4, d, nodes, edges);
+    FeatureGraph graph = FeatureGraph(6, d, nodes, edges);
     GraphAnalyzer analyzer = GraphAnalyzer(graph);
 
 
@@ -36,8 +36,8 @@ int main() {
     vector<float> newFeatures {3, 3};
     Node newNode = Node(newNodeID, newFeatures);
 
-    analyzer.insert(newNode);
-    analyzer.insert(Edge(4, 5, 32));
+//    analyzer.insert(newNode);
+//    analyzer.insert(Edge(4, 5, 32));
 
     vector<float> weights{.5, .5};
     vector<int> neighbors = analyzer.topKNeighbors(2, 3, weights);
@@ -46,7 +46,7 @@ int main() {
         cout << *i << ",";
     cout << "\n";
 
-    cout << analyzer.topNonNeighbor(2, weights) << "\n";
+    cout << analyzer.topNonNeighbor(3, weights) << "\n";
 
     cout << analyzer.jacardIndexOfTopKNeighborhoods(1, 2, 2, weights);
     return 0;

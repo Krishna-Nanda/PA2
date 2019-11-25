@@ -22,8 +22,6 @@ public:
     GraphAnalyzer(FeatureGraph& G): G(G) {
         vector<Graph_Node> graph = G.getGraph();
 
-        int num_open = 0;
-        int num_closed = 0;
         for(int i = 0; i < graph.size(); i++){
             vector<Neighbor_Node*> og_neighbors = graph[i].neighbors;
             for(int j = 0; j < og_neighbors.size(); j++){
@@ -48,7 +46,6 @@ public:
                             continue;
                         } else if(og_neighbors[l]->node->id == neighbor_check){
                             closed = true;
-                            num_closed++;
 
                             vector<int> node_ids;
                             node_ids.push_back(graph[i].node->id);
@@ -85,8 +82,6 @@ public:
                         int weight = weight1 + weight2;
 
                         Triangle new_open = Triangle(node_ids, weight);
-
-                        num_open++;
 
                         bool duplicate = false;
                         vector<Triangle> temp = open_triangles;

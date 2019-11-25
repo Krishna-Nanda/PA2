@@ -39,15 +39,13 @@ int GraphAnalyzer::diameter() {
         }
         vector<pair<int, int>> shortest_path = Shortest_Path(graph[i]);
         int current_max = shortest_path[0].first;
-        for(int j = 1; j < shortest_path.size(); j++){
-            if(current_max < shortest_path[j].first)
+        for(int j = 1; j < shortest_path.size(); j++) {
+            if (current_max < shortest_path[j].first)
                 current_max = shortest_path[j].first;
 
-        if(current_max > current_diameter)
-            current_diameter = current_max;
-    }
-
-
+            if (current_max > current_diameter)
+                current_diameter = current_max;
+        }
 
     }
     return current_diameter;
@@ -113,10 +111,6 @@ vector<int> GraphAnalyzer::topKNeighbors(int nodeID, int k,  vector<float> w) {
 
     sort(node_priority_pair.begin(), node_priority_pair.end(), descending_order);
 
-//    for(int i = 0; i < node_priority_pair.size(); i++){
-//        cout << "Priority is " << node_priority_pair[i].first << " at " <<  node_priority_pair[i].second << endl;
-//    }
-
     for(int i = 0; i < k; i++){
         if(node_priority_pair.size() > i){
             node_ids.push_back(node_priority_pair[i].second);
@@ -130,7 +124,50 @@ vector<int> GraphAnalyzer::topKNeighbors(int nodeID, int k,  vector<float> w) {
 
 int GraphAnalyzer::topNonNeighbor(int nodeID, vector<float> w) {
     //TODO
-    return 1;
+    Graph_Node node = getGraphNode(nodeID);
+
+    vector<Neighbor_Node*> neighbor_ids = node.neighbors;
+    vector<Graph_Node> graph = G.getGraph();
+
+    for(int j = 0; j < neighbor_ids.size(); j++){
+        for(int i = 0; i < graph.size(); i++){
+            if(graph[i].node->id == neighbor_ids[j]->node->id){
+                graph.erase(graph.begin() + i);
+                i--;
+                continue;
+            }
+            if(graph[i].node->id == nodeID){
+                graph.erase(graph.begin() + i);
+                i--;
+            }
+        }
+    }
+
+    for(int i = 0; i < graph.size(); i++){
+
+    }
+
+    if(graph.size() == 0){
+        return -1;
+    }
+
+    int max_priority = 0;
+    int node_id = 0;
+
+    for(int i = 0; i < graph.size(); i++){
+        float priority = 0;
+        vector<float> node_features = graph[i].node->features;
+        for(int j = 0; j < w.size(); j++){
+            priority += w[j] * node_features[j];
+        }
+        if(priority > max_priority){
+            node_id = graph[i].node->id;
+            max_priority = priority;
+        }
+    }
+
+
+    return node_id;
 };
 
 
