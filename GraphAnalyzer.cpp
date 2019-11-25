@@ -147,6 +147,10 @@ float GraphAnalyzer::openClosedTriangleRatio() {
     num_open /= 2;
     num_closed /= 6;
 
+    if(num_closed == 0){
+        return -1;
+    }
+
     float ratio = (double) num_open/num_closed;
 
 
