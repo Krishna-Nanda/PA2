@@ -40,8 +40,8 @@ void GraphAnalyzer::insert(Edge e) {
 
             vector<int> nodes;
             nodes.push_back(e.IdA);
-            nodes.push_back(e.IdB);
             nodes.push_back(idb_node.neighbors[i]->node->id);
+            nodes.push_back(e.IdB);
 
             int weight = e.weight + idb_node.neighbors[i]->weight;
 
@@ -63,8 +63,8 @@ void GraphAnalyzer::insert(Edge e) {
 
             vector<int> nodes;
             nodes.push_back(e.IdA);
-            nodes.push_back(e.IdB);
             nodes.push_back(ida_node.neighbors[i]->node->id);
+            nodes.push_back(e.IdB);
 
             int weight = e.weight + ida_node.neighbors[i]->weight;
 
@@ -94,8 +94,9 @@ void GraphAnalyzer::insert(Edge e) {
         //closed
         vector<int> nodes;
         nodes.push_back(e.IdA);
-        nodes.push_back(e.IdB);
         nodes.push_back(common_neighbors[i]);
+        nodes.push_back(e.IdB);
+
 
         int weight = e.weight + weights[i].first + weights[i].second;
 
@@ -240,28 +241,22 @@ int GraphAnalyzer::topNonNeighbor(int nodeID, vector<float> w) {
             if(graph[i].node->id == neighbor_ids[j]->node->id){
                 graph.erase(graph.begin() + i);
                 i--;
-                continue;
-            }
-            if(graph[i].node->id == nodeID){
+            } else if(graph[i].node->id == nodeID){
                 graph.erase(graph.begin() + i);
                 i--;
             }
         }
     }
 
-    for(int i = 0; i < graph.size(); i++){
-
-    }
-
-    if(graph.size() == 0){
+    if(graph.empty()){
         return -1;
     }
 
-    int max_priority = 0;
+    double max_priority = 0;
     int node_id = 0;
 
-    for(int i = 0; i < graph.size(); i++){
-        float priority = 0;
+    for(unsigned long i = 0; i < graph.size(); i++){
+        double priority = 0;
         vector<float> node_features = graph[i].node->features;
         for(int j = 0; j < w.size(); j++){
             priority += w[j] * node_features[j];
@@ -302,8 +297,12 @@ float GraphAnalyzer::jacardIndexOfTopKNeighborhoods(int nodeAID, int nodeBiID, i
         unique.push_back(top_neighborB[i]);
         }
 
-    float size1 = common.size();
-    float size2 = unique.size();
+    double size1 = common.size();
+    double size2 = unique.size();
+
+    if( size2 == 0){
+        return 1;
+    }
 
     float result = size1 / size2;
 
@@ -330,7 +329,7 @@ vector<pair<int,int>> GraphAnalyzer::Shortest_Path(Graph_Node source_vetrex) {
         if(graph[i].node->id == source_vetrex.node->id) {
             distance.push_back(make_pair(0, graph[i].node->id));
         }else{
-            distance.push_back(make_pair(INT_MAX, graph[i].node->id));
+            distance.push_back(make_pair(INT8_MAX, graph[i].node->id));
         }
     }
 
