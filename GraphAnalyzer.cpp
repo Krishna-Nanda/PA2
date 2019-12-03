@@ -236,6 +236,10 @@ int GraphAnalyzer::topNonNeighbor(int nodeID, vector<float> w) {
     vector<Neighbor_Node*> neighbor_ids = node.neighbors;
     vector<Graph_Node> graph = G.getGraph();
 
+    if(graph.size() - 1 == neighbor_ids.size()){
+        return -1;
+    }
+
     for(int j = 0; j < neighbor_ids.size(); j++){
         for(int i = 0; i < graph.size(); i++){
             if(graph[i].node->id == neighbor_ids[j]->node->id){
@@ -248,17 +252,16 @@ int GraphAnalyzer::topNonNeighbor(int nodeID, vector<float> w) {
         }
     }
 
-    if(graph.empty()){
-        return -1;
-    }
-
-    double max_priority = 0;
-    int node_id = 0;
+    double max_priority = 0.0;
+    int node_id = -1;
 
     for(unsigned long i = 0; i < graph.size(); i++){
-        double priority = 0;
+        if(graph[i].node->id == nodeID){
+            continue;
+        }
+        double priority = 0.0;
         vector<float> node_features = graph[i].node->features;
-        for(int j = 0; j < w.size(); j++){
+        for(int j = 0; j < node_features.size(); j++){
             priority += w[j] * node_features[j];
         }
         if(priority > max_priority){
@@ -267,6 +270,9 @@ int GraphAnalyzer::topNonNeighbor(int nodeID, vector<float> w) {
         }
     }
 
+    if(max_priority == 0){
+        node_id = node_id = graph[graph.size()-1].node->id;
+    }
 
     return node_id;
 };
