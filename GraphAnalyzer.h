@@ -2,6 +2,7 @@
 #define ANALYZER_H
 
 #include "FeatureGraph.h"
+#include <iostream>
 
 
 using namespace std;
@@ -59,6 +60,7 @@ public:
 
                             bool duplicate = false;
                             vector<Triangle> temp = closed_triangles;
+
                             make_heap(temp.begin(), temp.end());
                             sort_heap(temp.begin(), temp.end());
 
@@ -101,6 +103,15 @@ public:
                 }
             }
         }
+
+        make_heap(open_triangles.begin(), open_triangles.end());
+        make_heap(closed_triangles.begin(), closed_triangles.end());
+//        cout << "is heap"<< endl;
+//
+//       cout << is_heap(open_triangles.begin(), open_triangles.end()) << endl;
+//      cout<<  is_heap(closed_triangles.begin(), closed_triangles.end()) << endl;
+//        cout << "done";
+
 	};
 
 
@@ -147,7 +158,8 @@ public:
 
     Graph_Node getGraphNode(int nodeID);
 
-    int numberOpenTriangles(vector<Graph_Node> graph);
+    vector<Triangle> getOpenTriangles();
+    vector<Triangle> getClosedTriangles();
 
 private:
     vector<Triangle> open_triangles;

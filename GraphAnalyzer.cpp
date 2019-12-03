@@ -26,6 +26,95 @@ void GraphAnalyzer::insert(Node n) {
 void GraphAnalyzer::insert(Edge e) {
     G.insert(e);
     // TODO Adjust calculations for ratio of open triangles and topKtriangles
+
+    Graph_Node ida_node = getGraphNode(e.IdA);
+    Graph_Node idb_node = getGraphNode(e.IdB);
+
+    if(ida_node.neighbors.size() == 1 ){
+
+        for(int i = 0; i < idb_node.neighbors.size(); i++){
+
+            if(idb_node.neighbors[i]->node->id == e.IdA){
+                continue;
+            }
+
+            vector<int> nodes;
+            nodes.push_back(e.IdA);
+            nodes.push_back(e.IdB);
+            nodes.push_back(idb_node.neighbors[i]->node->id);
+
+            int weight = e.weight + idb_node.neighbors[i]->weight;
+
+            Triangle new_open = Triangle(nodes, weight);
+
+            open_triangles.push_back(new_open);
+            push_heap(open_triangles.begin(), open_triangles.end());
+
+        }
+        return;
+
+    } else if(idb_node.neighbors.size() == 1){
+
+        for(int i = 0; i < ida_node.neighbors.size(); i++){
+
+            if(ida_node.neighbors[i]->node->id == e.IdB){
+                continue;
+            }
+
+            vector<int> nodes;
+            nodes.push_back(e.IdA);
+            nodes.push_back(e.IdB);
+            nodes.push_back(ida_node.neighbors[i]->node->id);
+
+            int weight = e.weight + ida_node.neighbors[i]->weight;
+
+            Triangle new_open = Triangle(nodes, weight);
+
+            open_triangles.push_back(new_open);
+            push_heap(open_triangles.begin(), open_triangles.end());
+
+        }
+        return;
+    }
+
+    vector<int> common_neighbors;
+    vector<pair<int, int>> weights;
+    for(int i = 0; i < ida_node.neighbors.size(); i++){
+        for(int j = 0; j < idb_node.neighbors.size(); j++){
+            if(ida_node.neighbors[i]->node->id == idb_node.neighbors[j]->node->id){
+                common_neighbors.push_back(ida_node.neighbors[i]->node->id);
+                weights.push_back(make_pair(ida_node.neighbors[i]->weight, idb_node.neighbors[j]->weight));
+
+            }
+        }
+    }
+
+    for(int i = 0; i < common_neighbors.size(); i++){
+
+        //closed
+        vector<int> nodes;
+        nodes.push_back(e.IdA);
+        nodes.push_back(e.IdB);
+        nodes.push_back(common_neighbors[i]);
+
+        int weight = e.weight + weights[i].first + weights[i].second;
+
+        Triangle new_closed = Triangle(nodes, weight);
+
+        closed_triangles.push_back(new_closed);
+        push_heap(closed_triangles.begin(), closed_triangles.end());
+
+        //open
+        for(int j = 0; j < open_triangles.size(); j++){
+            if(new_closed == open_triangles[j]){
+                open_triangles.erase(open_triangles.begin() + j);
+                j--;
+                make_heap(open_triangles.begin(), open_triangles.end());
+            }
+        }
+
+    }
+
 };
 
 int GraphAnalyzer::diameter() {
@@ -70,17 +159,34 @@ string GraphAnalyzer::topKOpenTriangles(int k) {
     //TODO
 
     //sort in largest to smallest with weights
+    vector<Triangle> temp_open_triangles;
+    for(int i = 0; i < open_triangles.size(); i++){
+        temp_open_triangles.push_back(open_triangles[i]);
+    }
+    make_heap(temp_open_triangles.begin(), temp_open_triangles.end());
     string result;
-    sort(open_triangles.begin(), open_triangles.end());
-    for(int i = open_triangles.size(); i >= 0 ; i--){
-        for(int j = 0; j < open_triangles[i].getNodeIds().size(); j++){
+
+    for(int i = 0; i < k; i++){
+        for(int j = 0; j < temp_open_triangles.front().getNodeIds().size(); j++){
+//            cout << "weight" << temp_open_triangles.front().getWeight() << endl;
             if(j == 2){
-                result += to_string(open_triangles[i].getNodeIds()[j]) + ";";
+                result += to_string(temp_open_triangles.front().getNodeIds()[j]) + ";";
             } else{
-                result += to_string(open_triangles[i].getNodeIds()[j]) + ",";
+                result += to_string(temp_open_triangles.front().getNodeIds()[j]) + ",";
             }
 
         }
+
+        pop_heap(temp_open_triangles.begin(), temp_open_triangles.end());
+        temp_open_triangles.pop_back();
+//        cout << "------";
+//        for(int i = 0; i < temp_open_triangles.size(); i++){
+//            for(int j = 0; j < temp_open_triangles[i].getNodeIds().size(); j++){
+//                cout << temp_open_triangles[i].getNodeIds()[j] << " ";
+//            }
+//            cout << endl;
+//        }
+
     }
 
     result = result.substr(0, result.size() - 1);
@@ -173,7 +279,35 @@ int GraphAnalyzer::topNonNeighbor(int nodeID, vector<float> w) {
 
 float GraphAnalyzer::jacardIndexOfTopKNeighborhoods(int nodeAID, int nodeBiID, int k, vector<float> w) {
     //TODO
-    return 0;
+    vector<int> top_neighborA = topKNeighbors(nodeAID,k,w);
+    vector<int> top_neighborB = topKNeighbors(nodeBiID,k,w);
+
+    vector<int> common;
+    vector<int> unique;
+    for(int i = 0; i < top_neighborA.size(); i++){
+        for(int j = 0; j < top_neighborB.size(); j++){
+            if(top_neighborA[i] == top_neighborB[j]){
+                    common.push_back(top_neighborA[i]);
+                    top_neighborA.erase(top_neighborA.begin() + i);
+                    top_neighborB.erase(top_neighborB.begin() + j);
+                    i--;
+                    j--;
+                }
+            }
+        }
+    for(int i = 0; i < top_neighborA.size(); i++){
+        unique.push_back(top_neighborA[i]);
+        }
+    for(int i = 0; i < top_neighborB.size(); i++){
+        unique.push_back(top_neighborB[i]);
+        }
+
+    float size1 = common.size();
+    float size2 = unique.size();
+
+    float result = size1 / size2;
+
+    return result;
 };
 
 Graph_Node GraphAnalyzer::getGraphNode(int nodeID){
@@ -263,9 +397,12 @@ vector<pair<int,int>> GraphAnalyzer::Shortest_Path(Graph_Node source_vetrex) {
 
 }
 
-int GraphAnalyzer::numberOpenTriangles(vector <Graph_Node> graph) {
+vector<Triangle> GraphAnalyzer::getOpenTriangles(){
+    return open_triangles;
+}
 
-    return 0;
+vector<Triangle> GraphAnalyzer::getClosedTriangles(){
+    return closed_triangles;
 }
 
 

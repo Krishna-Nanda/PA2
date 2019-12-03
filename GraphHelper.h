@@ -40,12 +40,35 @@ public:
     bool operator== (Triangle  const &other) const {
         //TODO
 
-        for(int i = 0; i < 3; i++){
-            if(nodes_ids[i] != other.nodes_ids[i]){
-                return false;
-            }
+        int first_id = nodes_ids[0];
+        int second_id = nodes_ids[1];
+        int third_id = nodes_ids[2];
+
+        int other_first = other.nodes_ids[0];
+        int other_second = other.nodes_ids[1];
+        int other_third = other.nodes_ids[2];
+
+        bool first = false;
+        bool second = false;
+        bool third = false;
+
+        if(first_id == other_first || first_id == other_second || first_id == other_third){
+            first = true;
         }
-        return true;
+        if(second_id == other_first || second_id == other_second || second_id == other_third){
+            second = true;
+        }
+        if(third_id == other_first || third_id == other_second || third_id == other_third){
+            third = true;
+        }
+
+//
+//        for(int i = 0; i < 3; i++){
+//            if(nodes_ids[i] != other.nodes_ids[i]){
+//                return false;
+//            }
+//        }
+        return first && second && third;
     }
 
         bool operator < (Triangle const &other) const {

@@ -23,21 +23,47 @@ int main() {
     FeatureGraph graph = FeatureGraph(6, d, nodes, edges);
     GraphAnalyzer analyzer = GraphAnalyzer(graph);
 
-
+//for(int i = 0; i < analyzer.getOpenTriangles().size(); i++){
+//    cout << "triangle ";
+//    for(int j = 0; j < analyzer.getOpenTriangles()[i].getNodeIds().size(); j++){
+//        cout << analyzer.getOpenTriangles()[i].getNodeIds()[j] << " ";
+//    }
+//    cout << analyzer.getOpenTriangles()[i].getWeight();
+//    cout << endl;
+//}
 
     cout << analyzer.diameter() << "\n";
 
     cout << analyzer.openClosedTriangleRatio() << "\n";
 
-    cout << analyzer.topKOpenTriangles(2) << "\n";
+    cout << analyzer.topKOpenTriangles(3) << "\n";
 
     
-    int newNodeID = 5;
+    int newNodeID = 7;
     vector<float> newFeatures {3, 3};
     Node newNode = Node(newNodeID, newFeatures);
 
+//    cout << "BEFORE" << endl;
+//    cout << analyzer.getOpenTriangles().size() << endl;
+//    cout << analyzer.getClosedTriangles().size()  << endl;
+//
 //    analyzer.insert(newNode);
-//    analyzer.insert(Edge(4, 5, 32));
+//    analyzer.insert(Edge(4, 7, 32));
+////
+//    cout << "BETWEEN" << endl;
+//    cout << analyzer.getOpenTriangles().size() << endl;
+//    cout << analyzer.getClosedTriangles().size()  << endl;
+//
+//    analyzer.insert(Edge(3, 7, 100));
+//
+//    cout << "AFTER" << endl;
+//    cout << analyzer.getOpenTriangles().size() << endl;
+//    cout << analyzer.getClosedTriangles().size()  << endl;
+//
+//
+//
+//    cout << analyzer.topKOpenTriangles(3) << endl;
+//    cout << analyzer.openClosedTriangleRatio() << endl;
 
     vector<float> weights{.5, .5};
     vector<int> neighbors = analyzer.topKNeighbors(2, 3, weights);
