@@ -30,7 +30,10 @@ void GraphAnalyzer::insert(Edge e) {
     Graph_Node ida_node = getGraphNode(e.IdA);
     Graph_Node idb_node = getGraphNode(e.IdB);
 
-    if(ida_node.neighbors.size() == 1 ){
+    if(ida_node.neighbors.size() == 1 && idb_node.neighbors.size() == 1){
+        return;
+    }
+    if(ida_node.neighbors.size() == 1){
 
         for(int i = 0; i < idb_node.neighbors.size(); i++){
 
@@ -40,8 +43,8 @@ void GraphAnalyzer::insert(Edge e) {
 
             vector<int> nodes;
             nodes.push_back(e.IdA);
-            nodes.push_back(idb_node.neighbors[i]->node->id);
             nodes.push_back(e.IdB);
+            nodes.push_back(idb_node.neighbors[i]->node->id);
 
             int weight = e.weight + idb_node.neighbors[i]->weight;
 
@@ -78,15 +81,45 @@ void GraphAnalyzer::insert(Edge e) {
     }
 
     vector<int> common_neighbors;
+    vector<pair<int, int>> uncommon_neighborsA;
+    vector<pair<int, int>> uncommon_neighborsB;
+
     vector<pair<int, int>> weights;
+
     for(int i = 0; i < ida_node.neighbors.size(); i++){
+        bool in_common = false;
         for(int j = 0; j < idb_node.neighbors.size(); j++){
+
             if(ida_node.neighbors[i]->node->id == idb_node.neighbors[j]->node->id){
+                in_common = true;
                 common_neighbors.push_back(ida_node.neighbors[i]->node->id);
                 weights.push_back(make_pair(ida_node.neighbors[i]->weight, idb_node.neighbors[j]->weight));
 
             }
         }
+        if(!in_common){
+            if(ida_node.neighbors[i]->node->id == idb_node.node->id){
+                continue;
+            }
+            uncommon_neighborsA.push_back(make_pair(ida_node.neighbors[i]->node->id, ida_node.neighbors[i]->weight));
+        }
+
+    }
+
+    for(int i = 0; i < idb_node.neighbors.size(); i++){
+        bool in_common = false;
+        for(int j = 0; j < ida_node.neighbors.size(); j++){
+            if(ida_node.neighbors[j]->node->id == idb_node.neighbors[i]->node->id){
+                in_common = true;
+            }
+        }
+        if(!in_common){
+            if(idb_node.neighbors[i]->node->id == ida_node.node->id){
+                continue;
+            }
+            uncommon_neighborsB.push_back(make_pair(idb_node.neighbors[i]->node->id, idb_node.neighbors[i]->weight));
+        }
+
     }
 
     for(int i = 0; i < common_neighbors.size(); i++){
@@ -94,9 +127,8 @@ void GraphAnalyzer::insert(Edge e) {
         //closed
         vector<int> nodes;
         nodes.push_back(e.IdA);
-        nodes.push_back(common_neighbors[i]);
         nodes.push_back(e.IdB);
-
+        nodes.push_back(common_neighbors[i]);
 
         int weight = e.weight + weights[i].first + weights[i].second;
 
@@ -115,6 +147,41 @@ void GraphAnalyzer::insert(Edge e) {
         }
 
     }
+
+//    cout << "open2" << open_triangles.size() << endl;
+//    cout << "closed2" << closed_triangles.size() << endl;
+
+        for(int i = 0; i < uncommon_neighborsA.size(); i++){
+
+            vector<int> nodes;
+            nodes.push_back(e.IdB);
+            nodes.push_back(e.IdA);
+            nodes.push_back(uncommon_neighborsA[i].first);
+
+            int weight = e.weight + uncommon_neighborsA[i].second;
+
+            Triangle new_open = Triangle(nodes, weight);
+
+            open_triangles.push_back(new_open);
+            push_heap(open_triangles.begin(), open_triangles.end());
+        }
+
+    for(int i = 0; i < uncommon_neighborsB.size(); i++){
+
+        vector<int> nodes;
+        nodes.push_back(e.IdA);
+        nodes.push_back(e.IdB);
+        nodes.push_back(uncommon_neighborsB[i].first);
+
+        int weight = e.weight + uncommon_neighborsB[i].second;
+
+        Triangle new_open = Triangle(nodes, weight);
+
+        open_triangles.push_back(new_open);
+        push_heap(open_triangles.begin(), open_triangles.end());
+    }
+
+
 
 };
 
@@ -144,7 +211,7 @@ int GraphAnalyzer::diameter() {
 
 float GraphAnalyzer::openClosedTriangleRatio() {
     //TODO
-    if(closed_triangles.size() == 0 ){
+    if(closed_triangles.size() == 0){
         return -1;
     }
 
@@ -164,12 +231,17 @@ string GraphAnalyzer::topKOpenTriangles(int k) {
     for(int i = 0; i < open_triangles.size(); i++){
         temp_open_triangles.push_back(open_triangles[i]);
     }
+
     make_heap(temp_open_triangles.begin(), temp_open_triangles.end());
-    string result;
+
+    string result = "";
+
+    if(k > temp_open_triangles.size()){
+        return result;
+    }
 
     for(int i = 0; i < k; i++){
         for(int j = 0; j < temp_open_triangles.front().getNodeIds().size(); j++){
-//            cout << "weight" << temp_open_triangles.front().getWeight() << endl;
             if(j == 2){
                 result += to_string(temp_open_triangles.front().getNodeIds()[j]) + ";";
             } else{
@@ -198,10 +270,9 @@ string GraphAnalyzer::topKOpenTriangles(int k) {
 
 vector<int> GraphAnalyzer::topKNeighbors(int nodeID, int k,  vector<float> w) {
     //TODO
-
     Graph_Node graph_node = getGraphNode(nodeID);
     vector<int> node_ids(0, 0);
-    vector<pair<float,int>> node_priority_pair;
+    vector<pair<float,int>> node_priority_pair(0);
 
     for(int i = 0; i < graph_node.neighbors.size(); i++){
             //calc priority
@@ -271,7 +342,7 @@ int GraphAnalyzer::topNonNeighbor(int nodeID, vector<float> w) {
     }
 
     if(max_priority == 0){
-        node_id = node_id = graph[graph.size()-1].node->id;
+        node_id = graph[graph.size()-1].node->id;
     }
 
     return node_id;
@@ -283,28 +354,19 @@ float GraphAnalyzer::jacardIndexOfTopKNeighborhoods(int nodeAID, int nodeBiID, i
     vector<int> top_neighborA = topKNeighbors(nodeAID,k,w);
     vector<int> top_neighborB = topKNeighbors(nodeBiID,k,w);
 
-    vector<int> common;
-    vector<int> unique;
+    vector<int> common(0);
+    vector<int> unique(0);
+
     for(int i = 0; i < top_neighborA.size(); i++){
         for(int j = 0; j < top_neighborB.size(); j++){
             if(top_neighborA[i] == top_neighborB[j]){
                     common.push_back(top_neighborA[i]);
-                    top_neighborA.erase(top_neighborA.begin() + i);
-                    top_neighborB.erase(top_neighborB.begin() + j);
-                    i--;
-                    j--;
                 }
             }
         }
-    for(int i = 0; i < top_neighborA.size(); i++){
-        unique.push_back(top_neighborA[i]);
-        }
-    for(int i = 0; i < top_neighborB.size(); i++){
-        unique.push_back(top_neighborB[i]);
-        }
 
     double size1 = common.size();
-    double size2 = unique.size();
+    double size2 = top_neighborA.size() + top_neighborB.size() - common.size();
 
     if( size2 == 0){
         return 1;

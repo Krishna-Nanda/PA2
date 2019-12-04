@@ -10,8 +10,6 @@
 
 using namespace std;
 
-
-
 struct Neighbor_Node{
     Node* node;
     int weight;
@@ -47,6 +45,7 @@ public:
     // insert given edge
     // May assume nodes in edge are already present
     void insert(Edge edge);
+
     vector<Graph_Node> getGraph();
 
 private:

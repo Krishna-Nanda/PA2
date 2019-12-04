@@ -62,17 +62,11 @@ public:
             third = true;
         }
 
-//
-//        for(int i = 0; i < 3; i++){
-//            if(nodes_ids[i] != other.nodes_ids[i]){
-//                return false;
-//            }
-//        }
         return first && second && third;
     }
 
         bool operator < (Triangle const &other) const {
-//        //TODO
+        //TODO
         int other_weight = other.weight;
         return weight < other_weight;
     }

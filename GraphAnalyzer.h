@@ -107,11 +107,6 @@ public:
 
         make_heap(open_triangles.begin(), open_triangles.end());
         make_heap(closed_triangles.begin(), closed_triangles.end());
-//        cout << "is heap"<< endl;
-//
-//       cout << is_heap(open_triangles.begin(), open_triangles.end()) << endl;
-//      cout<<  is_heap(closed_triangles.begin(), closed_triangles.end()) << endl;
-//        cout << "done";
 
 	};
 
