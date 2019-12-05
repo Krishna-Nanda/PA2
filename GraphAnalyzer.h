@@ -8,8 +8,6 @@
 
 using namespace std;
 
-
-
 class GraphAnalyzer {
 
 
@@ -63,7 +61,6 @@ public:
                             vector<Triangle> temp = closed_triangles;
 
                             make_heap(temp.begin(), temp.end());
-                            sort_heap(temp.begin(), temp.end());
 
                             for(int m = 0; m < temp.size(); m++){
                                 if(temp[m] == new_closed){
@@ -90,7 +87,6 @@ public:
                         vector<Triangle> temp = open_triangles;
 
                         make_heap(temp.begin(), temp.end());
-                        sort_heap(temp.begin(), temp.end());
 
                         for(int m = 0; m < temp.size(); m++){
                             if(temp[m] == new_open){

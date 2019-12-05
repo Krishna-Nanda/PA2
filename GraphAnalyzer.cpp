@@ -91,6 +91,7 @@ void GraphAnalyzer::insert(Edge e) {
         for(int j = 0; j < idb_node.neighbors.size(); j++){
 
             if(ida_node.neighbors[i]->node->id == idb_node.neighbors[j]->node->id){
+
                 in_common = true;
                 common_neighbors.push_back(ida_node.neighbors[i]->node->id);
                 weights.push_back(make_pair(ida_node.neighbors[i]->weight, idb_node.neighbors[j]->weight));
@@ -122,7 +123,7 @@ void GraphAnalyzer::insert(Edge e) {
 
     }
 
-    for(int i = 0; i < common_neighbors.size(); i++){
+    for(unsigned long i = 0; i < common_neighbors.size(); i++){
 
         //closed
         vector<int> nodes;
@@ -138,7 +139,7 @@ void GraphAnalyzer::insert(Edge e) {
         push_heap(closed_triangles.begin(), closed_triangles.end());
 
         //open
-        for(int j = 0; j < open_triangles.size(); j++){
+        for(unsigned long j = 0; j < open_triangles.size(); j++){
             if(new_closed == open_triangles[j]){
                 open_triangles.erase(open_triangles.begin() + j);
                 j--;
@@ -148,10 +149,7 @@ void GraphAnalyzer::insert(Edge e) {
 
     }
 
-//    cout << "open2" << open_triangles.size() << endl;
-//    cout << "closed2" << closed_triangles.size() << endl;
-
-        for(int i = 0; i < uncommon_neighborsA.size(); i++){
+        for(unsigned long i = 0; i < uncommon_neighborsA.size(); i++){
 
             vector<int> nodes;
             nodes.push_back(e.IdB);
@@ -166,7 +164,7 @@ void GraphAnalyzer::insert(Edge e) {
             push_heap(open_triangles.begin(), open_triangles.end());
         }
 
-    for(int i = 0; i < uncommon_neighborsB.size(); i++){
+    for(unsigned long i = 0; i < uncommon_neighborsB.size(); i++){
 
         vector<int> nodes;
         nodes.push_back(e.IdA);
@@ -211,12 +209,12 @@ int GraphAnalyzer::diameter() {
 
 float GraphAnalyzer::openClosedTriangleRatio() {
     //TODO
-    if(closed_triangles.size() == 0){
-        return -1;
-    }
-
     float num_open = open_triangles.size();
     float num_closed = closed_triangles.size();
+
+    if(num_closed <= 0){
+        return -1;
+    }
 
     float ratio =  num_open/num_closed;
 
@@ -236,7 +234,7 @@ string GraphAnalyzer::topKOpenTriangles(int k) {
 
     string result = "";
 
-    if(k > temp_open_triangles.size()){
+    if(k > temp_open_triangles.size() || temp_open_triangles.empty()){
         return result;
     }
 
