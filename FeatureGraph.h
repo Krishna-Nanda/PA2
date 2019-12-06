@@ -41,6 +41,8 @@ public:
 
     //Insert node with given ID and feature vectors
     void insert(Node node);
+    void erase(int node_id);
+    void erase(int id1, int id2);
 
     // insert given edge
     // May assume nodes in edge are already present

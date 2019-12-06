@@ -23,6 +23,124 @@ void GraphAnalyzer::insert(Node n) {
     // TODO Adjust calculations for ratio of open triangles and topKtriangles
 };
 
+void GraphAnalyzer::remove(int node1) {
+    Graph_Node graphNode = getGraphNode(node1);
+    G.erase(node1);
+};
+
+void GraphAnalyzer::remove(int node1, int node2) {
+    Graph_Node graphNode = getGraphNode(node1);
+    Graph_Node graphNode2 = getGraphNode(node2);
+
+    if(graphNode.neighbors.size() == 1 && graphNode2.neighbors.size() == 1){
+        G.erase(node1, node2);
+        return;
+    }
+
+    if(graphNode.neighbors.size() == 1){
+
+        for(int i = 0; i < open_triangles.size(); i++){
+            bool found = false;
+            for(int j = 0; j < 2; j++){
+                if(node1 == open_triangles[i].getNodeIds()[j]){
+                    found = true;
+                }
+            }
+            if(found){
+                open_triangles.erase(open_triangles.begin() + i);
+                i--;
+            }
+        }
+
+        G.erase(node1, node2);
+        return;
+    } else if(graphNode2.neighbors.size() == 1){
+
+        for(int i = 0; i < open_triangles.size(); i++){
+            bool found = false;
+            for(int j = 0; j < 2; j++){
+                if(node2 == open_triangles[i].getNodeIds()[j]){
+                    found = true;
+                }
+            }
+            if(found){
+                open_triangles.erase(open_triangles.begin() + i);
+                i--;
+            }
+        }
+
+        G.erase(node1, node2);
+        return;
+    }
+
+    //more than one neighbor each
+    vector<int> common_neighbors;
+    vector<pair<int,int>> weights;
+
+    for(int i = 0; i < graphNode.neighbors.size(); i++){
+        bool in_common = false;
+        if(graphNode.neighbors[i]->node->id == graphNode2.node->id){
+            continue;
+        }
+        for(int j = 0; j < graphNode2.neighbors.size(); j++) {
+            if (graphNode.neighbors[i]->node->id == graphNode2.neighbors[j]->node->id) {
+                in_common = true;
+                common_neighbors.push_back(graphNode.neighbors[i]->node->id);
+                weights.push_back(make_pair(graphNode.neighbors[i]->weight, graphNode2.neighbors[j]->weight));
+            }
+        }
+
+    }
+
+//    for(int i = 0; i < graphNode2.neighbors.size(); i++){
+//        bool in_common = false;
+//        if(graphNode2.neighbors[i]->node->id == graphNode.node->id){
+//            continue;
+//        }
+//        for(int j = 0; j < graphNode.neighbors.size(); j++){
+//            if(graphNode.neighbors[j]->node->id == graphNode2.neighbors[i]->node->id){
+//                common_neighborsB.push_back(make_pair(graphNode.neighbors[j]->node->id,graphNode2.neighbors[i]->weight));
+//            }
+//        }
+//        if(!in_common){
+//            if(graphNode2.neighbors[i]->node->id == graphNode.node->id){
+//                continue;
+//            }
+//           // uncommon_neighborsB.push_back(graphNode2.neighbors[i]->node->id);
+//        }
+//
+//    }
+
+    for(int j = 0; j < common_neighbors.size(); j++){
+        vector<int> nodes;
+        nodes.push_back(node1);
+        nodes.push_back(node2);
+        nodes.push_back(common_neighbors[j]);
+
+        sort(nodes.begin(), nodes.end());
+
+        int weight = weights[j].second + weights[j].first;
+
+        Triangle new_open = Triangle(nodes,weight);
+
+        open_triangles.push_back(new_open);
+        push_heap(open_triangles.begin(), open_triangles.end());
+
+        for(int i = 0; i < closed_triangles.size(); i++){
+            if(new_open == closed_triangles[i]){
+                closed_triangles.erase(closed_triangles.begin() + i);
+                i--;
+            }
+        }
+
+    }
+
+    G.erase(node1, node2);
+
+    make_heap(open_triangles.begin(), open_triangles.end());
+    make_heap(closed_triangles.begin(), closed_triangles.end());
+};
+
 void GraphAnalyzer::insert(Edge e) {
     G.insert(e);
     // TODO Adjust calculations for ratio of open triangles and topKtriangles
@@ -395,7 +513,7 @@ vector<pair<int,int>> GraphAnalyzer::Shortest_Path(Graph_Node source_vetrex) {
         if(graph[i].node->id == source_vetrex.node->id) {
             distance.push_back(make_pair(0, graph[i].node->id));
         }else{
-            distance.push_back(make_pair(INT8_MAX, graph[i].node->id));
+            distance.push_back(make_pair(INT32_MAX, graph[i].node->id));
         }
     }
 
@@ -403,36 +521,23 @@ vector<pair<int,int>> GraphAnalyzer::Shortest_Path(Graph_Node source_vetrex) {
     queue.resize(distance.size());
     copy(distance.begin(), distance.end(), queue.begin());
 
-    make_heap(queue.begin(),queue.end());
-    sort_heap(queue.begin(),queue.end());
+    make_heap(queue.begin(),queue.end(), descending_order);
 
     while(!queue.empty()){
-        bool found = false;
-        for(int i = 0; i < Visited_Before.size(); i++){
-            for(int j = 0; j < queue.size(); j++){
-                if( Visited_Before[i] == queue[j].second){
-                    queue.erase(queue.begin() + j);
-                    sort_heap(queue.begin(),queue.end());
-                    found = true;
-                }
-            }
-
-        }
-
 
         pair<int, int> current_pair = queue.front();
 
-        if(found){
-            continue;
-        } else{
-            Visited_Before.push_back(current_pair.second);
-        }
+        Visited_Before.push_back(current_pair.second);
+
+        pop_heap(queue.begin(), queue.end());
+        queue.pop_back();
 
         Graph_Node graph_node = getGraphNode(current_pair.second);
 
         for(int i = 0; i < graph_node.neighbors.size(); i++){
             //make sure not viasited
 
+            //update distance
             int current_id = graph_node.node->id;
             int neighbor_id = graph_node.neighbors[i]->node->id;
 
@@ -449,12 +554,24 @@ vector<pair<int,int>> GraphAnalyzer::Shortest_Path(Graph_Node source_vetrex) {
                     neighbor_index = j;
                     neighbor_distance = distance[j].first;
                 }
+
             }
 
+            //update queue
+            int neighbor_index_queue;
+
+            for(int j = 0; j < queue.size(); j++){
+                if(neighbor_id == queue[j].second){
+                    neighbor_index_queue = j;
+                }
+            }
             if(neighbor_distance > current_distance + graph_node.neighbors[i]->weight){
                 distance[neighbor_index].first = current_distance +  graph_node.neighbors[i]->weight;
+                queue[neighbor_index_queue].first = current_distance +  graph_node.neighbors[i]->weight;
             }
         }
+
+        make_heap(queue.begin(),queue.end(), descending_order);
 
     }
 

@@ -116,6 +116,8 @@ public:
     //Insert given edge into graph
     // You may assume that the edge contains nodes already inserted into the graph
     void insert(Edge e);
+    void remove(int node1);
+   void remove(int node1, int node2);
 
    	// Return the diameter of the network.
     int diameter();

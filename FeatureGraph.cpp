@@ -77,6 +77,39 @@ void FeatureGraph::insert(Edge edge){
 
 };
 
+    void FeatureGraph::erase(int node_id){
+        for(int i = 0; i < graph.size(); i++){
+            if(graph[i].node->id == node_id){
+                graph.erase(graph.begin() + i);
+            }
+        }
+    };
+    void FeatureGraph::erase(int id1, int id2){
+        int index_ida = -1;
+        int index_idb = -1;
+
+        for(int j = 0; j < graph.size(); j++){
+            if(graph[j].node->id == id1) {
+                index_ida = j;
+            }
+            if(graph[j].node->id == id2){
+                index_idb = j;
+            }
+        }
+
+
+        for(int i = 0; i<graph[index_ida].neighbors.size(); i++){
+            graph[index_ida].neighbors.erase( graph[index_ida].neighbors.begin() + i);
+            i--;
+        }
+
+        for(int i = 0; i<graph[index_idb].neighbors.size(); i++){
+            graph[index_idb].neighbors.erase( graph[index_idb].neighbors.begin() + i);
+            i--;
+        }
+
+    };
+
 vector<Graph_Node> FeatureGraph::getGraph(){
     return graph;
 }
